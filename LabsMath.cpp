@@ -14,7 +14,8 @@ int32_t main() {
     cout << "C(" << n << "," << k << ") = " << C(n, k) << "\n";
     cout << "_C(" << n << "," << k << ") = " << _C(n, k) << "\n";
 
-    vi perm = { 1, 2, 3, 4, 5, 6 };
+    vi perm(n);
+    iota(all(perm), 1);
     cout << "\nPermutations:" << endl;
     do {
         for (int x : perm) cout << x << " ";
