@@ -4,79 +4,89 @@ template <typename T, size_t N> int SIZE(const T(&t)[N]) { return N; } template<
 
 
 int32_t main() {
-    Node* stack = nullptr;
+    Node* stackTop = nullptr;
     Node* queueFront = nullptr;
     Node* queueRear = nullptr;
-    Node* list = nullptr;
-
+    Node* listHead = nullptr;
     int choice, value, key;
-    do {
-        cout << "1. Push (Stack)\n2. Pop (Stack)\n3. Show Stack\n";
-        cout << "4. Enqueue (Queue)\n5. Dequeue (Queue)\n6. Show Queue\n";
-        cout << "7. Add Begin (List)\n8. Add End (List)\n9. Del Begin (List)\n";
-        cout << "10. Del End (List)\n11. Search (List)\n12. Add Mid (List)\n";
-        cout << "13. Del Mid (List)\n14. Show List\n0. Exit\nChoice: ";
+
+    while (true) {
+        cout << "\nChoose an operation:\n";
+        cout << "1. Stack Push\n2. Stack Pop\n3. Show Stack\n\n";
+        cout << "4. Queue Enqueue\n5. Queue Dequeue\n6. Show Queue\n\n";
+        cout << "7. Add to List (Begin)\n8. Add to List (End)\n9. Show List\n";
+        cout << "10. Delete from List (Begin)\n11. Delete from List (End)\n";
+        cout << "12. Add to List (Mid)\n13. Delete from List (Mid)\n";
+        cout << "0. Exit\n";
+        cout << "Enter choice: ";
         cin >> choice;
+
         switch (choice) {
-        case 1:
-            cout << "Enter value: ";
+        case 1:  // Stack Push
+            cout << "Enter value to push: ";
             cin >> value;
-            push(stack, value);
+            push(stackTop, value);
             break;
-        case 2:
-            cout << "Popped: " << pop(stack) << endl;
+        case 2:  // Stack Pop
+            value = pop(stackTop);
+            cout << "Popped value: " << value << endl;
             break;
-        case 3:
-            showStack(stack);
+        case 3:  // Show Stack
+            cout << "Stack: ";
+            showStack(stackTop);
             break;
-        case 4:
-            cout << "Enter value: ";
+        case 4:  // Queue Enqueue
+            cout << "Enter value to enqueue: ";
             cin >> value;
             enqueue(queueFront, queueRear, value);
             break;
-        case 5:
-            cout << "Dequeued: " << dequeue(queueFront, queueRear) << endl;
+        case 5:  // Queue Dequeue
+            value = dequeue(queueFront, queueRear);
+            cout << "Dequeued value: " << value << endl;
             break;
-        case 6:
+        case 6:  // Show Queue
+            cout << "Queue: ";
             showQueue(queueFront);
             break;
-        case 7:
-            cout << "Enter value: ";
+        case 7:  // Add to List (Begin)
+            cout << "Enter value to add at the beginning: ";
             cin >> value;
-            add_begin(list, value);
+            add_begin(listHead, value);
             break;
-        case 8:
-            cout << "Enter value: ";
+        case 8:  // Add to List (End)
+            cout << "Enter value to add at the end: ";
             cin >> value;
-            add_end(list, value);
+            add_end(listHead, value);
             break;
-        case 9:
-            del_begin(list);
+        case 9:  // Show List
+            cout << "List: ";
+            showList(listHead);
             break;
-        case 10:
-            del_end(list);
+        case 10:  // Delete from List (Begin)
+            del_begin(listHead);
+            cout << "Deleted from the beginning of the list.\n";
             break;
-        case 11:
-            cout << "Enter key: ";
+        case 11:  // Delete from List (End)
+            del_end(listHead);
+            cout << "Deleted from the end of the list.\n";
+            break;
+        case 12:  // Add to List (Mid)
+            cout << "Enter key to add after: ";
             cin >> key;
-            cout << (search(list, key) ? "Found\n" : "Not found\n");
+            cout << "Enter value to add: ";
+            cin >> value;
+            add_mid(listHead, key, value);
             break;
-        case 12:
-            cout << "Enter key and value: ";
-            cin >> key >> value;
-            add_mid(list, key, value);
-            break;
-        case 13:
-            cout << "Enter key: ";
+        case 13:  // Delete from List (Mid)
+            cout << "Enter key to delete: ";
             cin >> key;
-            del_mid(list, key);
+            del_mid(listHead, key);
             break;
-        case 14:
-            showList(list);
-            break;
+        case 0:  // Exit
+            cout << "Exiting program...\n";
+            return 0;
         default:
-            cout << "Invalid ♿\n";
-            break;
+            cout << "Invalid choice. Try again.\n";
         }
-    } while (choice != 0);
+    }
 }
