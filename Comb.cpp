@@ -30,8 +30,7 @@ bool GenPerm(vi& A) {
     int j = A.size() - 1;
     while (A[j] <= A[i]) --j;
     swap(A[i], A[j]);
-    for (int l = i + 1, r = A.size() - 1; l < r; ++l, --r)
-        swap(A[l], A[r]);
+    for (int l = i + 1, r = A.size() - 1; l < r; ++l, --r) swap(A[l], A[r]);
     return true;
 }
 
