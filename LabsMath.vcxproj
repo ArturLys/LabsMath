@@ -129,15 +129,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Comb.cpp" />
-    <ClCompile Include="LabsMath.cpp">
+    <ClCompile Include="lab4.cpp" />
+    <ClCompile Include="lab3.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="template.h">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comb.h" />
+    <ClInclude Include="List.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -31,8 +31,9 @@ bool GenPerm(vi& A) {
     int j = n - 1;
     while (A[j] <= A[i]) j--;
     swap(A[i], A[j]);
-    reverse(A.begin() + i + 1, A.end());
-    return 1;
+    for (int l = i + 1, r = A.size() - 1; l < r; ++l, --r) swap(A[l], A[r]);
+    return true;
+    return true;
 }
 
 bool GenComb(vi& A, int n, int k) {
