@@ -1,198 +1,55 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include "Converter.h"
+template <typename T, size_t N> int SIZE(const T(&t)[N]) { return N; } template<typename T> int SIZE(const T& t) { return t.size(); } string to_string(const string s, int x1 = 0, int x2 = 1e9) { return '"' + ((x1 < s.size()) ? s.substr(x1, x2-x1+1) : "") + '"'; } string to_string(const char* s) { return to_string((string)s); } string to_string(const bool b) { return (b ? "true" : "false"); } string to_string(const char c) { return string({ c }); } template<size_t N> string to_string(const bitset<N>& b, int x1 = 0, int x2 = 1e9) { string t = ""; for (int __iii__ = min(x1, SIZE(b)), __jjj__ = min(x2, SIZE(b)-1); __iii__ <= __jjj__; ++__iii__) { t += b[__iii__] + '0'; } return '"' + t + '"'; } template <typename A, typename... C> string to_string(const A(&v), int x1 = 0, int x2 = 1e9, C... coords); int l_v_l_v_l = 0, t_a_b_s = 0; template <typename A, typename B> string to_string(const pair<A, B>& p) { l_v_l_v_l++; string res = "(" + to_string(p.first) + ", " + to_string(p.second) + ")"; l_v_l_v_l--; return res; } template <typename A, typename... C> string to_string(const A(&v), int x1, int x2, C... coords) { int rnk = rank<A>::value; string tab(t_a_b_s, ' '); string res = ""; bool first = true; if (l_v_l_v_l == 0) res += '\n'; res += tab + "["; x1 = min(x1, SIZE(v)), x2 = min(x2, SIZE(v)); auto l = begin(v); advance(l, x1); auto r = l; advance(r, (x2-x1) + (x2 < SIZE(v))); for (auto e = l; e != r; e = next(e)) { if (!first) { res += ", "; } first = false; l_v_l_v_l++; if (e != l) { if (rnk > 1) { res += '\n'; t_a_b_s = l_v_l_v_l; }; } else { t_a_b_s = 0; } res += to_string(*e, coords...); l_v_l_v_l--; } res += "]"; if (l_v_l_v_l == 0) res += '\n'; return res; } void dbgm() { ; } template<typename Heads, typename... Tails> void dbgm(Heads H, Tails... T) { cout << to_string(H) << " "; dbgm(T...); }
+#define debug(...) cout << "" << #__VA_ARGS__ << " : "; dbgm(__VA_ARGS__); cout << endl
 
-// Shorter type names and macros
-#define pb push_back
-typedef long long ll;
-
-// Structure to represent a node in the expression tree.
-struct Node {
-    string v;
-    Node* l, * r;
-    Node(const string& s) : v(s), l(nullptr), r(nullptr) {}
-};
-
-// Global variables used for recursive descent parsing.
-vector<string> tokens;
-int pos;
-
-// Forward declarations for recursive descent functions.
-Node* expr();
-Node* term();
-Node* factor();
-
-// expr = term { ("+" | "-") term }
-Node* expr() {
-    Node* n = term();
-    while (pos < tokens.size() && (tokens[pos] == "+" || tokens[pos] == "-")) {
-        Node* cur = new Node(tokens[pos++]);
-        cur->l = n;
-        cur->r = term();
-        n = cur;
-    }
-    return n;
-}
-
-// term = factor { ("*" | "/") factor }
-Node* term() {
-    Node* n = factor();
-    while (pos < tokens.size() && (tokens[pos] == "*" || tokens[pos] == "/")) {
-        Node* cur = new Node(tokens[pos++]);
-        cur->l = n;
-        cur->r = factor();
-        n = cur;
-    }
-    return n;
-}
-
-// factor = number | "(" expr ")"
-Node* factor() {
-    if (tokens[pos] == "(") {
-        pos++; // skip '('
-        Node* n = expr();
-        pos++; // skip ')'
-        return n;
-    }
-    return new Node(tokens[pos++]);
-}
-
-// Tree traversal functions
-string toInfix(Node* n) {
-    if (!n->l && !n->r) return n->v;
-    return "(" + toInfix(n->l) + " " + n->v + " " + toInfix(n->r) + ")";
-}
-
-string toPrefix(Node* n) {
-    if (!n) return "";
-    string res = n->v;
-    if (n->l || n->r) {
-        res += " " + toPrefix(n->l) + " " + toPrefix(n->r);
-    }
-    return res;
-}
-
-string toPostfix(Node* n) {
-    if (!n) return "";
-    string res;
-    if (n->l || n->r)
-        res = toPostfix(n->l) + " " + toPostfix(n->r) + " " + n->v;
-    else
-        res = n->v;
-    return res;
-}
-
-// Build tree from prefix notation (Polish)
-Node* buildPrefixTree(const vector<string>& t, int& i) {
-    string token = t[i++];
-    Node* node = new Node(token);
-    if (token == "+" || token == "-" || token == "*" || token == "/") {
-        node->l = buildPrefixTree(t, i);
-        node->r = buildPrefixTree(t, i);
-    }
-    return node;
-}
-
-// Build tree from postfix notation (Reverse Polish) using a stack
-Node* buildPostfixTree(const vector<string>& t) {
-    stack<Node*> st;
-    for (auto& s : t) {
-        if (s == "+" || s == "-" || s == "*" || s == "/") {
-            Node* r = st.top(); st.pop();
-            Node* l = st.top(); st.pop();
-            Node* node = new Node(s);
-            node->l = l;
-            node->r = r;
-            st.push(node);
-        }
-        else {
-            st.push(new Node(s));
-        }
-    }
-    return st.top();
-}
-
-// Utility function to split a string into tokens by whitespace.
-vector<string> split(const string& s) {
-    istringstream iss(s);
-    vector<string> res;
-    string token;
-    while (iss >> token)
-        res.pb(token);
-    return res;
-}
-
-// Main function
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    //getline(cin, a);
-    //string s = "-5 + 5-(-4*6)-12* (-2.5)";
-    string s = "- 6 5";
+int32_t main() {
+    auto isNumber = [](const string& s) { char* p; return strtod(s.c_str(), &p), * p == 0; };
+    
+    //string s;
+    //getline(cin, s);
+    
+    //string s = "-5 + 5-(4*6) - 12*2.5";
+    //string s = "(((5 + 8) * 2)/3-4)^6";
+    string s = "- ^ + 4 3 2 * + 7 8 5";
+    //string s = "* + 5 3 2"; //prefix
+    //string s = "5 3 + 2 *"; //postfix
     s.push_back(' ');
 
-    vector<string> exprTokens;
-    int numCnt = 0;
-    bool canNeg = true, isNeg = false;
-    // normalize
-    for (int i = 0; i < s.size(); i++) {
-        if (isdigit(s[i]) || s[i] == '.') {
-            numCnt++;
-            continue;
-        }
-        else if (numCnt > 0) {
-            string num = s.substr(i - numCnt, numCnt);
-            if (isNeg) num = "-" + num;
-            exprTokens.pb(num);
-            numCnt = 0;
-            canNeg = false;
-            isNeg = false;
-        }
-        if (s[i] == ' ') {
-            canNeg = false;
-            isNeg = false;
-            continue;
-        }
-        if (s[i] == '-' && canNeg) {
-            if (s[i+1] == ' ') {
-                exprTokens.pb(string(1, s[i]));
-                continue;
-            }
-            isNeg = true;
-            continue;
-        }
-        exprTokens.pb(string(1, s[i]));
-        if (s[i] != ')') canNeg = true;
+    vector<string> tokens = Tokenize(s);
+
+    short op;
+    if (isNumber(tokens[0]) && isNumber(tokens[1])) op = 0;//cout << "post";
+    else if (!isNumber(tokens[0]) && tokens[0] != "(") op = 1;//cout << "pre";
+    else op = 2;//cout << "in";
+
+    string post = "";
+
+    switch (op)
+    {
+    case 0:
+        post = InfixToPrefix(Tokenize(PostfixtoInfix(tokens)));
+        cout << "prefix: " << post << "\n";
+        cout << "infix: " << PostfixtoInfix(tokens) << "\n";
+        cout << "evaluated: " << Solve(tokens) << "\n";
+        break;
+
+    case 1:
+        post = InfixToPostfix(Tokenize(PrefixtoInfix(tokens)));
+        cout << "postfix: " << post << "\n";
+        cout << "infix: " << PrefixtoInfix(tokens) << "\n";
+        cout << "evaluated: " << Solve(Tokenize(post)) << "\n";
+        break;
+
+    case 2:
+        post = InfixToPostfix(tokens);
+        cout << "postfix: " << post << "\n";
+        cout << "prefix: " << InfixToPrefix(tokens) << "\n";
+        cout << "evaluated: " << Solve(Tokenize(post)) << "\n";
+        break;
+
+    default:
+        break;
     }
-    for (auto& i : exprTokens) {
-        cout << i << " ";
-    }
-    auto isNumber = [](const string& s) { char* p; return strtod(s.c_str(), &p), * p == 0; };
-    if (isNumber(exprTokens[0])&&isNumber(exprTokens[1])) cout << "post";
-    else if (!isNumber(exprTokens[0]) && exprTokens[0] != "(") cout << "pre";
-    else cout << "in";
 
-    // Build tree from infix tokens using recursive descent parsing.
-    tokens = exprTokens;
-    pos = 0;
-    Node* infixTree = expr();
 
-    // Convert tree to different notations.
-    string infixStr = toInfix(infixTree);
-    string prefixStr = toPrefix(infixTree);
-    string postfixStr = toPostfix(infixTree);
-
-    cout << "Infix: " << infixStr << "\n";
-    cout << "Prefix: " << prefixStr << "\n";
-    cout << "Postfix: " << postfixStr << "\n";
-
-    // Reconstruct trees from prefix and postfix notations.
-    vector<string> preTokens = split(prefixStr);
-    vector<string> postTokens = split(postfixStr);
-    int idx = 0;
-    Node* preTree = buildPrefixTree(preTokens, idx);
-    Node* postTree = buildPostfixTree(postTokens);
-
-    cout << "Infix from Prefix: " << toInfix(preTree) << "\n";
-    cout << "Infix from Postfix: " << toInfix(postTree) << "\n";
 }
