@@ -1,0 +1,117 @@
+#include "template.h"
+
+const int N = 6;
+vvi graph = {
+    {0,   10, INF,  1, INF, INF},
+    {10,   0,  10, INF, INF, INF},
+    {INF, 10,   0, INF, INF,  10},
+    {1,  INF, INF,   0,  10, INF},
+    {INF, INF, INF,  10,   0,  15},
+    {INF, INF,  10, INF,  15,   0},
+};
+
+// --- Dijkstra Single‐Source Shortest Paths ---
+void dijkstra(const vvi& graph, int start) {
+    int n = graph.size();
+    vector<int> dist(n, INF), prev(n, -1);
+    vector<bool> used(n, false);
+
+    dist[start] = 0;
+    for (int it = 0; it < n; ++it) {
+        int u = -1;
+        for (int i = 0; i < n; ++i)
+            if (!used[i] && (u == -1 || dist[i] < dist[u]))
+                u = i;
+        if (u == -1 || dist[u] == INF) break;
+        used[u] = true;
+
+        for (int v = 0; v < n; ++v) {
+            if (graph[u][v] < INF && dist[u] + graph[u][v] < dist[v]) {
+                dist[v] = dist[u] + graph[u][v];
+                prev[v] = u;
+            }
+        }
+    }
+
+    cout << "\nDijkstra (from vertex " << start << "):\n";
+    for (int v = 0; v < n; ++v) {
+        cout << "  to " << v << ": ";
+        if (dist[v] == INF) {
+            cout << "no path\n";
+        }
+        else {
+            // reconstruct path
+            vector<int> path;
+            for (int cur = v; cur != -1; cur = prev[cur])
+                path.push_back(cur);
+            for (int i = (int)path.size() - 1; i >= 0; --i) {
+                cout << path[i] << (i ? " -> " : "");
+            }
+            cout << " (cost = " << dist[v] << ")\n";
+        }
+    }
+}
+
+// --- Floyd–Warshall All‐Pairs Shortest Paths ---
+void floydWarshall(const vvi& graph) {
+    int n = graph.size();
+    vector<vector<int>> dist = graph;
+    vector<vector<int>> next(n, vector<int>(n, -1));
+
+    // initialize `next` table
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (graph[i][j] < INF && i != j)
+                next[i][j] = j;
+        }
+    }
+
+    // triple loop
+    for (int k = 0; k < n; ++k)
+        for (int i = 0; i < n; ++i)
+            if (dist[i][k] < INF)
+                for (int j = 0; j < n; ++j)
+                    if (dist[k][j] < INF &&
+                        dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                        next[i][j] = next[i][k];
+                    }
+
+    // output results
+    cout << "\nFloyd–Warshall:\n";
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            cout << dist[i][j] << " ";
+        }
+        cout << "\n";
+    }
+}
+
+int32_t main() {
+    while (true) {
+        cout<< "1. Dijkstra (SSSP)\n"
+            << "2. Floyd–Warshall (APSP)\n"
+            << "Your choice: ";
+
+        int choice;
+        if (!(cin >> choice) || choice == 0)
+            break;
+
+        if (choice == 1) {
+            int start;
+            cout << "Enter start vertex [0.." << N - 1 << "]: ";
+            cin >> start;
+            if (start >= 0 && start < N)
+                dijkstra(graph, start);
+            else
+                cout << "Invalid vertex\n";
+        }
+        else if (choice == 2) {
+            floydWarshall(graph);
+        }
+        else {
+            cout << "Invalid\n";
+        }
+    }
+    return 0;
+}
